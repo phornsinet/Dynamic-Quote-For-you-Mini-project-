@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect  } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Quote, RefreshCw } from "lucide-react"
+import { Quote, RefreshCw, Play, Pause, Volume2, VolumeX } from "lucide-react"
+
 
 interface QuoteData {
   id: number
@@ -14,6 +15,37 @@ interface QuoteData {
 export default function QuoteGenerator() {
   const [quote, setQuote] = useState<QuoteData | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isMuted, setIsMuted] = useState(false)
+  const [volume, setVolume] = useState(0.3)
+  const audioRef = useRef<HTMLAudioElement>(null)
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+      audioRef.current.muted = isMuted
+    }
+  }, [volume, isMuted])
+
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause()
+      } else {
+        audioRef.current.play()
+      }
+      setIsPlaying(!isPlaying)
+    }
+  }
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted)
+  }
+
+  const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = Number.parseFloat(e.target.value)
+    setVolume(newVolume)
+  }
 
   const fetchRandomQuote = async () => {
     setIsLoading(true)
@@ -32,11 +64,36 @@ export default function QuoteGenerator() {
   }
 
   return (
+    
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 relative"
-      style={{ backgroundImage: "url(/b1.jpg)" }}
-    >
+      style={{ backgroundImage: "url(/b1.jpg)" }}>
       <div className="absolute inset-0 bg-black/30"></div>
+      <div className="fixed top-4 right-4 z-20 flex items-center gap-2 bg-black/50 backdrop-blur-md rounded-lg p-3">
+        
+        <Button onClick={togglePlayPause} size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2">
+          {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+        </Button>
+        <Button onClick={toggleMute} size="sm" variant="ghost" className="text-white hover:bg-white/20 p-2">
+          {isMuted ? 
+          <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+        </Button>
+
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.1"
+          value={volume}
+          onChange={handleVolumeChange}
+          className="w-16 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer"
+        />
+      </div>
+      <audio ref={audioRef} loop preload="auto" onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)}>
+        <source src="/The-Inspiration-mp3(chosic.com).mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+
       <div className="w-full max-w-2xl mx-auto relative z-10">
         <div className="text-center mb-12">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -66,7 +123,7 @@ export default function QuoteGenerator() {
           ) : (
             <div className="text-center py-12">
               <Quote className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-              <p className="text-xl text-white/90 dark:text-slate-500 dark:text-slate-400">
+              <p className="text-xl text-white/90 dark:text-slate-500">
                 Click the button below to get your first inspiring quote 
               </p>
             </div>
