@@ -11,6 +11,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 1.Frontend (Next.js):Handles the user interface and displays dynamic quotes. It communicates with the backend through Supabase’s API.
 2.Backend (Supabase):Acts as the database layer where all the quotes are stored. Supabase provides an API to read/write data securely.
 3.Communication Flow: 
--User opens the website in the browser. 
--Next.js (frontend) sends a request to Supabase via the provided API keys. 
--Supabase returns the stored quotes. -Next.js renders and displays the quote dynamically on the page.
+3.1 User opens the website in the browser. 
+3.2 Next.js (frontend) sends a request to Supabase via the provided API keys. 
+3.3 Supabase returns the stored quotes. -Next.js renders and displays the quote dynamically on the page.
